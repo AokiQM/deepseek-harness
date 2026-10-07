@@ -517,7 +517,8 @@ export class LocaleRuntime {
  * Host preference may replace this provisional value after plugin activation.
  */
 function resolveInitialLocale(locales: readonly LocaleDefinition[], languages?: readonly string[]): LocaleId {
-  return detectBrowserLocale(locales, languages) ?? FALLBACK_LOCALE
+  // 二改：默认简体中文。浏览器语言不再作为初始语言；用户仍可在设置→语言里切换。
+  return 'zh'
 }
 
 /**
