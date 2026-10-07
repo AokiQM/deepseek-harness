@@ -513,42 +513,11 @@ export class LocaleRuntime {
 }
 
 /**
- * The browser's own language wins over {@link FALLBACK_LOCALE}; an explicit
- * Host preference may replace this provisional value after plugin activation.
+ * Initial locale defaults to Simplified Chinese for this fork; an explicit
+ * Host preference may still replace it after plugin activation.
  */
-function resolveInitialLocale(locales: readonly LocaleDefinition[], languages?: readonly string[]): LocaleId {
-  // 二改：默认简体中文。浏览器语言不再作为初始语言；用户仍可在设置→语言里切换。
+function resolveInitialLocale(_locales: readonly LocaleDefinition[], _languages?: readonly string[]): LocaleId {
   return 'zh'
-}
-
-/**
- * The first registered locale the browser asks for. Each browser tag first
- * matches a locale id exactly, then its primary subtag, so an exact regional
- * registration wins before a language-wide fallback.
- * `window` is the browser test, not `navigator`: Node exposes a global
- * `navigator` reporting the machine's own language, which must not decide the
- * locale for non-browser runs. `navigator.language` trails the ordered
- * `languages` list and covers hosts exposing only the single tag.
- * @param locales - definitions currently available to the browser.
- * @param languages - native system language order, when supplied by a shell.
- * @returns the first matching locale id, or undefined.
- */
-function detectBrowserLocale(locales: readonly LocaleDefinition[], languages?: readonly string[]): LocaleId | undefined {
-  if (languages === undefined) {
-    if (typeof window === 'undefined') return undefined
-    // Embedders and older WebViews may omit the DOM-typed `languages` property.
-    const browserLanguages = (navigator as { readonly languages?: readonly string[] }).languages
-    languages = [...(browserLanguages ?? []), navigator.language]
-  }
-  for (const tag of languages) {
-    const requested = localeKey(tag)
-    const exact = locales.find(locale => localeKey(locale.id) === requested)
-    if (exact !== undefined) return exact.id
-    const primary = requested.split('-')[0]
-    const match = locales.find(locale => localeKey(locale.id).split('-')[0] === primary)
-    if (match !== undefined) return match.id
-  }
-  return undefined
 }
 
 /** Required services: slot registration plus the settings transport. */
